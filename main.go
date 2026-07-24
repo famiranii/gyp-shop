@@ -17,7 +17,8 @@ func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/login", handler.LoginHandler)
 	http.HandleFunc("/register", handler.RegisterHandler)
-	http.HandleFunc("/Users", handler.UsersHandler)
+	http.HandleFunc("/users", handler.UsersHandler)
+	http.HandleFunc("/products", handler.ProductsHandler)
 
 	fmt.Println("server running on port", cfg.Port)
 

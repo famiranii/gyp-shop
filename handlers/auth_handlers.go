@@ -3,8 +3,8 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"gym-shop/services"
+	"gym-shop/utils"
 	"net/http"
 )
 
@@ -31,16 +31,26 @@ func (h Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if services.LoginCheck(
+	userInDataBase, err := services.LoginCheck(
 		h.DB,
 		user.Email,
 		user.Password,
-	) {
-		fmt.Fprintln(w, "Login success")
+	)
+	if err != nil {
+		http.Error(w, "Wrong email or password", http.StatusUnauthorized)
 		return
-
 	}
 
-	http.Error(w, "Wrong email or password", 401)
+	token, err := utils.GenerateToken(userInDataBase.ID)
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": token,
+	})
 
 }
